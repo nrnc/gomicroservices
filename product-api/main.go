@@ -25,9 +25,11 @@ func main() {
 
 	postRouter := router.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/", ph.AddProduct)
+	postRouter.Use(ph.MiddlewareProductValidation)
 
 	putRouter := router.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
+	putRouter.Use(ph.MiddlewareProductValidation)
 	// sm.Handle("/goodbye", gh)
 
 	// http.ListenAndServe(":8080", sm)
@@ -49,7 +51,6 @@ func main() {
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt)
-	// signal.Notify(sigChan, os.Kill)
 	sig := <-sigChan
 
 	l.Println("Recieved terminate,graceful shutdown", sig)
